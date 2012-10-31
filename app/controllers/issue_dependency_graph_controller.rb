@@ -21,6 +21,15 @@ class IssueDependencyGraphController < ApplicationController
 			end
 		end
 
+		all_issues.values.each do |i|
+			if i[:object].parent_id
+				relations << { :from => i[:object].parent_id, :to => i[:object].id, :type => 'child' }
+				relevant_issues[i[:object].id]        = all_issues[i[:object].id]
+				relevant_issues[i[:object].parent_id] = all_issues[i[:object].parent_id]
+			end
+		end
+
+
 		png = nil
 
 		IO.popen("dot -Tpng", "r+") do |io|
@@ -34,10 +43,12 @@ class IssueDependencyGraphController < ApplicationController
 			relations.each do |ir|
 				# http://www.redmine.org/projects/redmine/wiki/Rest_IssueRelations
 				# sez that relations can either be 'relates', 'blocks', or 'precedes'
+				# I add 'child', because that's how I roll.
 				style = case ir[:type]
 					when 'blocks'   then '[style=solid,  color=red]'
 					when 'precedes' then '[style=solid,  color=black]'
 					when 'relates'  then '[style=dotted, color=black]'
+					when 'child'    then '[style=dashed, color=grey]'
 					else '[style=bold, color=pink]'
 				end
 				io.puts "#{ir[:from]} -> #{ir[:to]} #{style}"
