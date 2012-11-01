@@ -1,9 +1,9 @@
 This is a simple plugin to render a graph of the issues in a version that
 have relationships to other tickets in the version.
 
-Once the plugin is installed, an extra link will show up on the page that
-shows all the tickets and progress for a version, named "View Issue
-Relations Graph".  Just click that link and you'll get a graph.
+Once the plugin is installed, new links will appear on the page that shows
+all the tickets and progress for a version, and on the issue display page. 
+Just click that link and you'll get a graph.
 
 
 # Installation requirements
