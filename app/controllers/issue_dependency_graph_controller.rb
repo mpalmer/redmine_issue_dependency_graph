@@ -44,14 +44,13 @@ class IssueDependencyGraphController < ApplicationController
 				# http://www.redmine.org/projects/redmine/wiki/Rest_IssueRelations
 				# sez that relations can either be 'relates', 'blocks', or 'precedes'
 				# I add 'child', because that's how I roll.
-				style = case ir[:type]
-					when 'blocks'   then '[style=solid,  color=red]'
-					when 'precedes' then '[style=solid,  color=black]'
-					when 'relates'  then '[style=dotted, color=black]'
-					when 'child'    then '[style=dashed, color=grey]'
-					else '[style=bold, color=pink]'
+				io.puts case ir[:type]
+					when 'blocks'   then "#{ir[:to]} -> #{ir[:from]} [style=solid,  color=red]"
+					when 'precedes' then "#{ir[:to]} -> #{ir[:from]} [style=solid,  color=black]"
+					when 'relates'  then "#{ir[:from]} -> #{ir[:to]} [style=dotted, color=black]"
+					when 'child'    then "#{ir[:from]} -> #{ir[:to]} [style=dashed, color=grey]"
+					else "#{ir[:from]} -> #{ir[:to]} [style=bold, color=pink]"
 				end
-				io.puts "#{ir[:from]} -> #{ir[:to]} #{style}"
 			end
 
 			io.puts "}"
