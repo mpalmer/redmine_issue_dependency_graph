@@ -27,12 +27,17 @@ class IssueDependencyGraphController < ApplicationController
 			end
 		end
 
+		render_graph(relevant_issues, relations)
+	end
+
+	private
+	def render_graph(issues, relations)
 		png = nil
 
 		IO.popen("unflatten | dot -Tpng", "r+") do |io|
 			io.binmode
 			io.puts "digraph redmine {"
-			relevant_issues.uniq.each do |i|
+			issues.uniq.each do |i|
 				colour = i.closed? ? 'grey' : 'black'
 				io.puts "#{i.id} [label=\"##{i.id}: #{render_title(i)}\", fontcolor=#{colour}]"
 			end
@@ -57,7 +62,6 @@ class IssueDependencyGraphController < ApplicationController
 		send_data png, :type => 'image/png', :filename => 'graph.png', :disposition => 'inline'
 	end
 
-	private
 	def render_title(i)
 		i.subject.chomp.gsub(/((?:[^ ]+ ){4})/, "\\1\\n").gsub('"', '\\"')
 	end
