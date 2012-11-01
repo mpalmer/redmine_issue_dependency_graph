@@ -30,6 +30,46 @@ class IssueDependencyGraphController < ApplicationController
 		render_graph(relevant_issues, relations)
 	end
 
+	def issue_graph
+		pending_issues = [Issue.find(params[:issue])]
+		relevant_issues = []
+		relations = []
+
+		until pending_issues.empty?
+			i = pending_issues.shift
+			relevant_issues << i
+
+			rels = i.relations.map { |ir| { :from => ir.issue_from_id, :to => ir.issue_to_id, :type => ir.relation_type } }
+			if i.parent_id
+				rels << { :from => i.parent_id, :to => i.id, :type => 'child' }
+			end
+			Issue.find_all_by_parent_id(i.id).each do |child|
+				rels << { :from => i.id, :to => child.id, :type => 'child' }
+			end
+
+			rels.each do |ir|
+				if ir[:from] == i.id
+					other_issue = ir[:to]
+					relations << ir
+				else
+					other_issue = ir[:from]
+				end
+
+				if relevant_issues.select { |ri| ri.id == other_issue }.empty?
+					pending_issues << Issue.find(other_issue)
+				else
+					# We've already processed the other issue in
+					# this relationship
+					next
+				end
+			end
+
+			pending_issues.uniq!
+		end
+
+		render_graph(relevant_issues, relations)
+	end
+
 	private
 	def render_graph(issues, relations)
 		png = nil
