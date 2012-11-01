@@ -1,7 +1,7 @@
 class IssueDependencyGraphController < ApplicationController
 	unloadable
 
-	def graph
+	def version_graph
 		all_issues = {}
 
 		Issue.find_all_by_fixed_version_id(params[:version]).each do |i|
