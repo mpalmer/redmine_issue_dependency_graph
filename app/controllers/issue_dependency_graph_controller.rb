@@ -32,7 +32,7 @@ class IssueDependencyGraphController < ApplicationController
 
 		png = nil
 
-		IO.popen("dot -Tpng", "r+") do |io|
+		IO.popen("unflatten | dot -Tpng", "r+") do |io|
 			io.binmode
 			io.puts "digraph redmine {"
 			relevant_issues.each do |id, i|
